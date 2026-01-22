@@ -7,19 +7,32 @@ set "URL_SCRIPT=hhttps://raw.githubusercontent.com/mora145/adb_script/refs/heads
 set "TEMP_SCRIPT=%temp%\update_v!random!.bat"
 
 echo [0/4] Checking for updates (Current: %CURRENT_VERSION%)...
+echo [0/4] Checking for updates...
+echo [DEBUG] Current version: "%CURRENT_VERSION%"
 
-:: Descargar versión remota a una variable
-for /f "delims=" %%v in ('curl -s %URL_VERSION%') do set "REMOTE_VERSION=%%v"
+:: Descargar versión remota (Usamos -L para redirecciones y -s para modo silencioso)
+set "REMOTE_VERSION="
+for /f "usebackq delims=" %%v in (`curl -L -s "%URL_VERSION%"`) do set "REMOTE_VERSION=%%v"
 
-:: Comparar versiones
+:: Limpiar posibles espacios en blanco en la variable
+if defined REMOTE_VERSION set "REMOTE_VERSION=%REMOTE_VERSION: =%"
+
+echo [DEBUG] Remote version: "%REMOTE_VERSION%"
+
+if "%REMOTE_VERSION%"=="" (
+    echo [!] Warning: Could not connect to update server. Skipping...
+    goto :START_SCRIPT
+)
+
 if "%REMOTE_VERSION%" neq "%CURRENT_VERSION%" (
-    if defined REMOTE_VERSION (
-        echo [!] New version detected: %REMOTE_VERSION%. Downloading...
-        
-        :: Descargar el nuevo script
-        curl -s -o "%~dp0%~n0_new%~x0" "%URL_SCRIPT%"
-        
-        :: Crear un script temporal para reemplazar el actual y reiniciarlo
+    echo [!] New version detected: %REMOTE_VERSION%. Updating...
+    
+    :: Descargar el nuevo script
+    curl -L -s -o "%~dp0%~n0_new%~x0" "%URL_SCRIPT%"
+    
+    if exist "%~dp0%~n0_new%~x0" (
+        :: Crear script de reemplazo
+        set "TEMP_UPDATER=%temp%\updater_!random!.bat"
         (
             echo @echo off
             echo timeout /t 1 /nobreak ^>nul
@@ -27,13 +40,17 @@ if "%REMOTE_VERSION%" neq "%CURRENT_VERSION%" (
             echo ren "%~dp0%~n0_new%~x0" "%~nx0"
             echo start "" "%~f0"
             echo del "%%~f0"
-        ) > "%TEMP_SCRIPT%"
+        ) > "!TEMP_UPDATER!"
         
-        start /b "" "%TEMP_SCRIPT%"
+        start /b "" "!TEMP_UPDATER!"
         exit /b
+    ) else (
+        echo [!] Error: Failed to download update.
     )
+) else (
+    echo [+] Script is up to date.
 )
-echo [+] Script is up to date.
+
 :: --- FIN DEL BLOQUE DE ACTUALIZACIÓN ---
 
 setlocal enabledelayedexpansion
