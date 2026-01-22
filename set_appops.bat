@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 :: --- UPDATE CONFIGURATION ---
 :: When you want to update all PCs, change this number here AND in version.txt on GitHub.
-set "CURRENT_VERSION=1.2"
+set "CURRENT_VERSION=1.3"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 set "LOG_FILE=%~dp0execution_log.txt"
@@ -112,4 +112,3 @@ if exist "!EXE_PATH!" (
 echo [%date% %time%] Execution finished. >> "%LOG_FILE%"
 echo.
 echo Done.
-pause
