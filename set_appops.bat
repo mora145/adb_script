@@ -2,8 +2,8 @@
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
 set "CURRENT_VERSION=1.0"
-set "URL_VERSION=https://tu-servidor.com/version.txt"
-set "URL_SCRIPT=https://tu-servidor.com/script.bat"
+set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
+set "URL_SCRIPT=hhttps://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 set "TEMP_SCRIPT=%temp%\update_v!random!.bat"
 
 echo [0/4] Checking for updates (Current: %CURRENT_VERSION%)...
