@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
-set "CURRENT_VERSION=1.5"
+set "CURRENT_VERSION=1.6"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 
@@ -170,4 +170,3 @@ if exist "!EXE_PATH!" (
 :END
 echo.
 echo Process finished.
-pause
