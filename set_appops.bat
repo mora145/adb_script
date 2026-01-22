@@ -1,4 +1,41 @@
 @echo off
+
+:: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
+set "CURRENT_VERSION=1.0"
+set "URL_VERSION=https://tu-servidor.com/version.txt"
+set "URL_SCRIPT=https://tu-servidor.com/script.bat"
+set "TEMP_SCRIPT=%temp%\update_v!random!.bat"
+
+echo [0/4] Checking for updates (Current: %CURRENT_VERSION%)...
+
+:: Descargar versión remota a una variable
+for /f "delims=" %%v in ('curl -s %URL_VERSION%') do set "REMOTE_VERSION=%%v"
+
+:: Comparar versiones
+if "%REMOTE_VERSION%" neq "%CURRENT_VERSION%" (
+    if defined REMOTE_VERSION (
+        echo [!] New version detected: %REMOTE_VERSION%. Downloading...
+        
+        :: Descargar el nuevo script
+        curl -s -o "%~dp0%~n0_new%~x0" "%URL_SCRIPT%"
+        
+        :: Crear un script temporal para reemplazar el actual y reiniciarlo
+        (
+            echo @echo off
+            echo timeout /t 1 /nobreak ^>nul
+            echo del "%~f0"
+            echo ren "%~dp0%~n0_new%~x0" "%~nx0"
+            echo start "" "%~f0"
+            echo del "%%~f0"
+        ) > "%TEMP_SCRIPT%"
+        
+        start /b "" "%TEMP_SCRIPT%"
+        exit /b
+    )
+)
+echo [+] Script is up to date.
+:: --- FIN DEL BLOQUE DE ACTUALIZACIÓN ---
+
 setlocal enabledelayedexpansion
 
 :: --- CONFIGURATION ---
