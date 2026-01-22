@@ -172,3 +172,4 @@ if exist "!EXE_PATH!" (
 
 echo.
 echo Process finished
+pause
