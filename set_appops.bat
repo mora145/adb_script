@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 if "%1"==":WORKER" goto :WORKER_MODE
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
-set "CURRENT_VERSION=1.7.1"
+set "CURRENT_VERSION=1.8"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 
