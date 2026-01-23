@@ -83,7 +83,7 @@ set "ADB_FLAG=%temp%\adb_done_!random!.flag"
 if exist "!ADB_FLAG!" del "!ADB_FLAG!"
 
 :: Start worker with hidden window to process devices
-start /b "" "%~f0" :WORKER "!ADB_FLAG!"
+start /b "" cmd /c ""%~f0" :WORKER "!ADB_FLAG!""
 
 :: Wait loop with timeout
 set "WAIT_TIME=0"
