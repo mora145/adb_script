@@ -1,8 +1,9 @@
 @echo off
 setlocal enabledelayedexpansion
+if "%1"==":WORKER" goto :WORKER_MODE
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
-set "CURRENT_VERSION=1.6"
+set "CURRENT_VERSION=1.7"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 
@@ -34,6 +35,9 @@ if "%REMOTE_VERSION%" neq "" if "%REMOTE_VERSION%" neq "%CURRENT_VERSION%" (
         exit /b
     )
 )
+
+set "MAX_RETRIES=2"
+set "RETRY_COUNT=0"
 
 :START_SCRIPT
 :: --- CONFIGURACIÓN DE APLICACIÓN ---
@@ -72,12 +76,38 @@ taskkill /f /im adb.exe >nul 2>&1
 timeout /t 2 /nobreak >nul
 
 echo [3/4] Starting ADB configuration...
-adb start-server >nul 2>&1
 
-:: Bucle de dispositivos
-for /f "tokens=1,2" %%i in ('adb devices ^| findstr /v "List" ^| findstr "device"') do (
-    if "%%j"=="device" (
-        call :PROCESS_DEVICE %%i
+:: Timeout setup (40 seconds)
+set "ADB_TIMEOUT=40"
+set "ADB_FLAG=%temp%\adb_done_!random!.flag"
+if exist "!ADB_FLAG!" del "!ADB_FLAG!"
+
+:: Start worker with hidden window to process devices
+start /b "" "%~f0" :WORKER "!ADB_FLAG!"
+
+:: Wait loop with timeout
+set "WAIT_TIME=0"
+:WAIT_LOOP
+timeout /t 1 /nobreak >nul
+if exist "!ADB_FLAG!" set "ADB_SUCCESS=1" & goto :ADB_DONE_WAIT
+set /a WAIT_TIME+=1
+if !WAIT_TIME! geq !ADB_TIMEOUT! set "ADB_SUCCESS=0" & goto :ADB_DONE_WAIT
+goto :WAIT_LOOP
+
+:ADB_DONE_WAIT
+if "!ADB_SUCCESS!"=="1" (
+    del "!ADB_FLAG!" >nul 2>&1
+    goto :FINISH_ADB
+) else (
+    echo [!] ADB timed out or hung. Retrying...
+    taskkill /f /im adb.exe >nul 2>&1
+    set /a RETRY_COUNT+=1
+    if !RETRY_COUNT! leq !MAX_RETRIES! (
+        echo [!] Retry attempt !RETRY_COUNT! of !MAX_RETRIES!...
+        goto :START_SCRIPT
+    ) else (
+        echo [!] Failed after max retries. Exiting.
+        exit /b 1
     )
 )
 
@@ -170,3 +200,17 @@ if exist "!EXE_PATH!" (
 :END
 echo.
 echo Process finished.
+exit /b
+
+:WORKER_MODE
+set "AUTO_SVC=ch.gridvision.ppam.androidautomagic/ch.gridvision.ppam.androidautomagic.AccessibilityService"
+adb start-server >nul 2>&1
+
+:: Bucle de dispositivos (Worker)
+for /f "tokens=1,2" %%i in ('adb devices ^| findstr /v "List" ^| findstr "device"') do (
+    if "%%j"=="device" (
+        call :PROCESS_DEVICE %%i
+    )
+)
+echo DONE > "%~2"
+exit
