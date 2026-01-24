@@ -1,9 +1,14 @@
 @echo off
 setlocal enabledelayedexpansion
 if "%1"==":WORKER" goto :WORKER_MODE
+if "%1"==":PROCESS_ONE" (
+    call :PROCESS_DEVICE %2
+    exit
+)
+
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
-set "CURRENT_VERSION=2.2"
+set "CURRENT_VERSION=2.3"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 
@@ -214,7 +219,7 @@ adb start-server >nul 2>&1
 for /f "tokens=1,2" %%i in ('adb devices ^| findstr /v "List" ^| findstr "device"') do (
     if exist "%temp%\kill_workers.flag" exit
     if "%%j"=="device" (
-        call :PROCESS_DEVICE %%i
+        cmd /c "call "%~f0" :PROCESS_ONE %%i"
     )
 )
 echo DONE > "%~2"
