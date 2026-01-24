@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 if "%1"==":WORKER" goto :WORKER_MODE
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
-set "CURRENT_VERSION=2.0"
+set "CURRENT_VERSION=2.1"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 
@@ -40,6 +40,7 @@ set "MAX_RETRIES=2"
 set "RETRY_COUNT=0"
 
 :START_SCRIPT
+if exist "%temp%\kill_workers.flag" del "%temp%\kill_workers.flag"
 :: --- CONFIGURACIÓN DE APLICACIÓN ---
 set "APP_NAME=xiaowei.exe"
 set "DEFAULT_PATH=C:\Program Files (x86)\Xiaowei\xiaowei\xiaowei.exe"
@@ -100,7 +101,9 @@ if "!ADB_SUCCESS!"=="1" (
     goto :FINISH_ADB
 ) else (
     echo [!] ADB timed out or hung. Retrying...
+    echo 1 > "%temp%\kill_workers.flag"
     taskkill /f /im adb.exe >nul 2>&1
+    timeout /t 2 /nobreak >nul
     set /a RETRY_COUNT+=1
     if !RETRY_COUNT! leq !MAX_RETRIES! (
         echo [!] Retry attempt !RETRY_COUNT! of !MAX_RETRIES!...
@@ -114,6 +117,7 @@ if "!ADB_SUCCESS!"=="1" (
 goto :FINISH_ADB
 
 :PROCESS_DEVICE
+if exist "%temp%\kill_workers.flag" exit
 set "ID=%1"
 echo ---------------------------------------
 echo Processing device: %ID%
@@ -208,6 +212,7 @@ adb start-server >nul 2>&1
 
 :: Bucle de dispositivos (Worker)
 for /f "tokens=1,2" %%i in ('adb devices ^| findstr /v "List" ^| findstr "device"') do (
+    if exist "%temp%\kill_workers.flag" exit
     if "%%j"=="device" (
         call :PROCESS_DEVICE %%i
     )
