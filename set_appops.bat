@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 if "%1"==":WORKER" goto :WORKER_MODE
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
-set "CURRENT_VERSION=2.1"
+set "CURRENT_VERSION=2.2"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 
@@ -84,7 +84,7 @@ set "ADB_FLAG=%temp%\adb_done_!random!.flag"
 if exist "!ADB_FLAG!" del "!ADB_FLAG!"
 
 :: Start worker with hidden window to process devices
-start /b "" cmd /c ""%~f0" :WORKER "!ADB_FLAG!""
+start "" /b cmd /c "call "%~f0" :WORKER "!ADB_FLAG!""
 
 :: Wait loop with timeout
 set "WAIT_TIME=0"
