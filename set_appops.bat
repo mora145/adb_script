@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 if "%1"==":WORKER" goto :WORKER_MODE
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
-set "CURRENT_VERSION=1.9"
+set "CURRENT_VERSION=2.0"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 
@@ -78,7 +78,7 @@ timeout /t 2 /nobreak >nul
 echo [3/4] Starting ADB configuration...
 
 :: Timeout setup (70 seconds)
-set "ADB_TIMEOUT=70"
+set "ADB_TIMEOUT=180"
 set "ADB_FLAG=%temp%\adb_done_!random!.flag"
 if exist "!ADB_FLAG!" del "!ADB_FLAG!"
 
