@@ -8,7 +8,7 @@ if "%1"==":PROCESS_ONE" (
 
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
-set "CURRENT_VERSION=2.3"
+set "CURRENT_VERSION=2.4"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 
@@ -174,6 +174,17 @@ adb -s %ID% shell appops set ch.gridvision.ppam.androidautomagic PROJECT_MEDIA a
 adb -s %ID% shell appops set ch.gridvision.ppam.androidautomagic SYSTEM_ALERT_WINDOW allow >nul 2>&1
 adb -s %ID% shell dumpsys deviceidle whitelist +ch.gridvision.ppam.androidautomagic >nul 2>&1
 echo [+] System fixes applied.
+
+:: 5. Rotate screen (force portrait)
+echo [+] Forcing screen rotation to portrait...
+adb -s %ID% shell settings put system accelerometer_rotation 0 >nul 2>&1
+adb -s %ID% shell settings put system user_rotation 0 >nul 2>&1
+
+:: 6. Volume down (repeat 5x)
+echo [+] Lowering volume (5x)...
+for /l %%n in (1,1,5) do (
+    adb -s %ID% shell input keyevent KEYCODE_VOLUME_DOWN >nul 2>&1
+)
 exit /b
 
 :FINISH_ADB
