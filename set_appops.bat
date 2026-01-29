@@ -8,7 +8,7 @@ if "%1"==":PROCESS_ONE" (
 
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
-set "CURRENT_VERSION=2.4"
+set "CURRENT_VERSION=2.5"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 
@@ -84,7 +84,7 @@ timeout /t 2 /nobreak >nul
 echo [3/4] Starting ADB configuration...
 
 :: Timeout setup (70 seconds)
-set "ADB_TIMEOUT=180"
+set "ADB_TIMEOUT=300"
 set "ADB_FLAG=%temp%\adb_done_!random!.flag"
 if exist "!ADB_FLAG!" del "!ADB_FLAG!"
 
@@ -185,6 +185,15 @@ echo [+] Lowering volume (5x)...
 for /l %%n in (1,1,5) do (
     adb -s %ID% shell input keyevent KEYCODE_VOLUME_DOWN >nul 2>&1
 )
+
+:: 7. Brave Notifications
+set "BRAVE_PKG=com.brave.browser"
+adb -s %ID% shell pm list packages %BRAVE_PKG% | findstr "%BRAVE_PKG%" >nul
+if !errorlevel! equ 0 (
+    echo [+] Brave detected. Enabling notifications...
+    adb -s %ID% shell appops set %BRAVE_PKG% POST_NOTIFICATION allow >nul 2>&1
+)
+
 exit /b
 
 :FINISH_ADB
