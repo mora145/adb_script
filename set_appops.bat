@@ -8,7 +8,7 @@ if "%1"==":PROCESS_ONE" (
 
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
-set "CURRENT_VERSION=2.8"
+set "CURRENT_VERSION=2.9"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 
@@ -252,7 +252,7 @@ if exist "!EXE_PATH!" (
 :END
 echo.
 echo Process finished.
-exit /b
+exit
 
 :WORKER_MODE
 set "AUTO_SVC=ch.gridvision.ppam.androidautomagic/ch.gridvision.ppam.androidautomagic.AccessibilityService"
