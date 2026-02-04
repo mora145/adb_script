@@ -8,7 +8,7 @@ if "%1"==":PROCESS_ONE" (
 
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
-set "CURRENT_VERSION=2.7"
+set "CURRENT_VERSION=2.8"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 
@@ -170,6 +170,8 @@ if defined KEY_ID (
 :: 4. Roaming y AppOps
 adb -s %ID% shell settings put global roaming_reminder_mode_setting 0 >nul 2>&1
 adb -s %ID% shell settings put global data_roaming 0 >nul 2>&1
+adb -s %ID% shell settings put global airplane_mode_on 0 >nul 2>&1
+adb -s %ID% shell am broadcast -a android.intent.action.AIRPLANE_MODE --ez state false >nul 2>&1
 adb -s %ID% shell appops set ch.gridvision.ppam.androidautomagic PROJECT_MEDIA allow >nul 2>&1
 adb -s %ID% shell appops set ch.gridvision.ppam.androidautomagic SYSTEM_ALERT_WINDOW allow >nul 2>&1
 adb -s %ID% shell dumpsys deviceidle whitelist +ch.gridvision.ppam.androidautomagic >nul 2>&1
@@ -204,6 +206,16 @@ for /f "tokens=2 delims=:" %%p in ('adb -s %ID% shell pm list packages com.insta
         adb -s %ID% shell appops set !PKG_NAME! POST_NOTIFICATION ignore >nul 2>&1
     )
 )
+
+:: 9. Disable XProxy Overlay
+::set "XPROXY_PKG=com.jumpermedia.xproxy"
+::adb -s %ID% shell pm list packages %XPROXY_PKG% | findstr "%XPROXY_PKG%" >nul
+::if !errorlevel! equ 0 (
+    ::echo [-] XProxy detected. Disabling overlay...
+    ::adb -s %ID% shell appops set %XPROXY_PKG% SYSTEM_ALERT_WINDOW deny >nul 2>&1
+::)
+
+
 
 exit /b
 
