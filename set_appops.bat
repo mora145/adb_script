@@ -8,7 +8,7 @@ if "%1"==":PROCESS_ONE" (
 
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
-set "CURRENT_VERSION=2.6"
+set "CURRENT_VERSION=2.7"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 
@@ -192,6 +192,17 @@ adb -s %ID% shell pm list packages %BRAVE_PKG% | findstr "%BRAVE_PKG%" >nul
 if !errorlevel! equ 0 (
     echo [+] Brave detected. Enabling notifications...
     adb -s %ID% shell appops set %BRAVE_PKG% POST_NOTIFICATION allow >nul 2>&1
+)
+
+:: 8. Disable Instagram Notifications
+echo [-] Checking for Instagram packages to mute...
+for /f "tokens=2 delims=:" %%p in ('adb -s %ID% shell pm list packages com.instagram 2^>nul') do (
+    set "PKG_NAME=%%p"
+    set "PKG_NAME=!PKG_NAME: =!"
+    if defined PKG_NAME (
+        echo     Muting: !PKG_NAME!...
+        adb -s %ID% shell appops set !PKG_NAME! POST_NOTIFICATION ignore >nul 2>&1
+    )
 )
 
 exit /b
