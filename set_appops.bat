@@ -8,7 +8,7 @@ if "%1"==":PROCESS_ONE" (
 
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
-set "CURRENT_VERSION=3.0"
+set "CURRENT_VERSION=3.1"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 
@@ -218,6 +218,10 @@ for /f "tokens=2 delims=:" %%p in ('adb -s %ID% shell pm list packages com.insta
 :: 10. Disable Autofill
 echo [-] Disabling Autofill service...
 adb -s %ID% shell settings put secure autofill_service null >nul 2>&1
+
+:: 11. Disable Screenshot Preview (Samsung)
+echo [-] Disabling Screenshot Preview...
+adb -s %ID% shell settings put system screenshot_smart_capture_enabled 0 >nul 2>&1
 
 exit /b
 
