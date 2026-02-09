@@ -8,7 +8,7 @@ if "%1"==":PROCESS_ONE" (
 
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
-set "CURRENT_VERSION=3.4"
+set "CURRENT_VERSION=3.5"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 
@@ -240,30 +240,61 @@ echo.
 echo Cleaning up ADB...
 taskkill /f /im adb.exe >nul 2>&1
 
-echo [4/4] Restarting %APP_NAME% and verifying startup...
-if exist "!EXE_PATH!" (
-    for %%A in ("!EXE_PATH!") do set "DIR=%%~dpA"
-    pushd "!DIR!"
-    start "" "%APP_NAME%"
-    popd
+echo [4/4] Restarting %APP_NAME% with multiple strategies...
 
-    :: Verificación de inicio
-    set "RETRIES=0"
-    :CHECK_LOOP
-    tasklist /FI "IMAGENAME eq %APP_NAME%" 2>nul | find /I "%APP_NAME%" >nul
-    if !errorlevel! equ 0 (
-        echo [OK] %APP_NAME% started from: "!EXE_PATH!"
-        goto :END
-    )
-    set /a RETRIES+=1
-    if !RETRIES! lss 10 (
-        timeout /t 1 /nobreak >nul
-        goto :CHECK_LOOP
-    )
-    echo [!] ERROR: %APP_NAME% failed to start.
-) else (
+if not exist "!EXE_PATH!" (
     echo [!] ERROR: Could not find executable to restart.
+    goto :END
 )
+
+for %%A in ("!EXE_PATH!") do set "DIR=%%~dpA"
+
+:: Method 1: pushd
+echo [Attempt 1] Standard launch...
+pushd "!DIR!"
+start "" "%APP_NAME%"
+popd
+call :CHECK_RUNNING
+if "!IS_RUNNING!"=="1" goto :SUCCESS_START
+
+:: Method 2: start /d
+echo [Attempt 2] Direct path launch...
+taskkill /f /im "%APP_NAME%" >nul 2>&1
+timeout /t 1 /nobreak >nul
+start "" /d "!DIR!" "!EXE_PATH!"
+call :CHECK_RUNNING
+if "!IS_RUNNING!"=="1" goto :SUCCESS_START
+
+:: Method 3: Explorer execution
+echo [Attempt 3] Explorer execution...
+taskkill /f /im "%APP_NAME%" >nul 2>&1
+timeout /t 1 /nobreak >nul
+explorer.exe "!EXE_PATH!"
+call :CHECK_RUNNING
+if "!IS_RUNNING!"=="1" goto :SUCCESS_START
+
+echo [!] CRITICAL: %APP_NAME% failed to start after 3 attempts.
+goto :END
+
+:SUCCESS_START
+echo [OK] %APP_NAME% is running successfully.
+goto :END
+
+:CHECK_RUNNING
+set "IS_RUNNING=0"
+set "WAIT_TRIES=0"
+:WAIT_LOOP_CHECK
+tasklist /FI "IMAGENAME eq %APP_NAME%" 2>nul | find /I "%APP_NAME%" >nul
+if !errorlevel! equ 0 (
+    set "IS_RUNNING=1"
+    exit /b
+)
+set /a WAIT_TRIES+=1
+if !WAIT_TRIES! lss 5 (
+    timeout /t 2 /nobreak >nul
+    goto :WAIT_LOOP_CHECK
+)
+exit /b
 
 :END
 echo.
