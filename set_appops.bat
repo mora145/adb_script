@@ -8,7 +8,7 @@ if "%1"==":PROCESS_ONE" (
 
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
-set "CURRENT_VERSION=3.2"
+set "CURRENT_VERSION=3.3"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 
@@ -227,6 +227,10 @@ adb -s %ID% shell settings put system screenshot_smart_capture_enabled 0 >nul 2>
 echo [+] Enabling Mobile Data...
 adb -s %ID% shell svc data enable >nul 2>&1
 adb -s %ID% shell settings put global mobile_data 1 >nul 2>&1
+
+:: 13. Open Automagic App
+echo [+] Opening Automagic...
+adb -s %ID% shell monkey -p ch.gridvision.ppam.androidautomagic -c android.intent.category.LAUNCHER 1 >nul 2>&1
 
 exit /b
 
