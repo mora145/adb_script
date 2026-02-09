@@ -8,7 +8,7 @@ if "%1"==":PROCESS_ONE" (
 
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
-set "CURRENT_VERSION=3.3"
+set "CURRENT_VERSION=3.4"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 
@@ -181,6 +181,7 @@ echo [+] System fixes applied.
 echo [+] Forcing screen rotation to portrait...
 adb -s %ID% shell settings put system accelerometer_rotation 0 >nul 2>&1
 adb -s %ID% shell settings put system user_rotation 0 >nul 2>&1
+adb -s %ID% shell wm user-rotation lock 0 >nul 2>&1
 
 :: 6. Volume down (repeat 5x)
 echo [+] Lowering volume (5x)...
