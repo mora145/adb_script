@@ -8,7 +8,7 @@ if "%1"==":PROCESS_ONE" (
 
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
-set "CURRENT_VERSION=3.1"
+set "CURRENT_VERSION=3.2"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 
@@ -222,6 +222,11 @@ adb -s %ID% shell settings put secure autofill_service null >nul 2>&1
 :: 11. Disable Screenshot Preview (Samsung)
 echo [-] Disabling Screenshot Preview...
 adb -s %ID% shell settings put system screenshot_smart_capture_enabled 0 >nul 2>&1
+
+:: 12. Enable Mobile Data
+echo [+] Enabling Mobile Data...
+adb -s %ID% shell svc data enable >nul 2>&1
+adb -s %ID% shell settings put global mobile_data 1 >nul 2>&1
 
 exit /b
 
