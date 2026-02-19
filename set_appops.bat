@@ -8,7 +8,7 @@ if "%1"==":PROCESS_ONE" (
 
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
-set "CURRENT_VERSION=3.7"
+set "CURRENT_VERSION=3.8"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 
@@ -184,10 +184,10 @@ echo [+] System fixes applied.
 ::adb -s %ID% shell wm user-rotation lock 0 >nul 2>&1
 
 :: 6. Volume down (repeat 5x)
-echo [+] Lowering volume (5x)...
-for /l %%n in (1,1,5) do (
-    adb -s %ID% shell input keyevent KEYCODE_VOLUME_DOWN >nul 2>&1
-)
+::echo [+] Lowering volume (5x)...
+::for /l %%n in (1,1,5) do (
+    ::adb -s %ID% shell input keyevent KEYCODE_VOLUME_DOWN >nul 2>&1
+::)
 
 :: 7. Brave Notifications
 set "BRAVE_PKG=com.brave.browser"
