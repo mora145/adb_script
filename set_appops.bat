@@ -233,6 +233,12 @@ adb -s %ID% shell settings put global mobile_data 1 >nul 2>&1
 echo [+] Opening Automagic...
 adb -s %ID% shell monkey -p ch.gridvision.ppam.androidautomagic -c android.intent.category.LAUNCHER 1 >nul 2>&1
 
+:: 14. Force Portrait Mode (Optional)
+echo [+] Forcing screen rotation to portrait...
+adb -s %ID% shell settings put system accelerometer_rotation 0 >nul 2>&1
+adb -s %ID% shell settings put system user_rotation 0 >nul 2>&1
+
+
 exit /b
 
 :FINISH_ADB
