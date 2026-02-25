@@ -8,7 +8,7 @@ if "%1"==":PROCESS_ONE" (
 
 
 :: --- CONFIGURACIÓN DE ACTUALIZACIÓN ---
-set "CURRENT_VERSION=3.9"
+set "CURRENT_VERSION=4.0"
 set "URL_VERSION=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/version.txt"
 set "URL_SCRIPT=https://raw.githubusercontent.com/mora145/adb_script/refs/heads/main/set_appops.bat"
 
@@ -238,6 +238,9 @@ echo [+] Forcing screen rotation to portrait...
 adb -s %ID% shell settings put system accelerometer_rotation 0 >nul 2>&1
 adb -s %ID% shell settings put system user_rotation 0 >nul 2>&1
 
+:: 15. Disable Airplane Mode (in case it was enabled)
+echo [+] Ensuring Airplane Mode is disabled...
+adb -s %ID% shell cmd connectivity airplane-mode disable >nul 2>&1
 
 exit /b
 
